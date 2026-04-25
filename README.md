@@ -1,37 +1,46 @@
 # BSAN6200 Assignment 5 - Option B (Job Fit Analyzer)
 
 ## Student
-Your Name Here
+Shahzeb Ather
 
 ## Project Description
-This project builds a job fit analyzer using language models and retrieval-augmented generation (RAG).
-It compares a resume against multiple job descriptions and returns:
-- fit summary,
+This project builds a job fit analyzer using language models and retrieval-augmented generation (RAG). The app compares resume content against job descriptions and returns a fit-oriented analysis.
+
+Current output includes:
+- fit assessment summary,
 - top matching strengths,
-- key gaps,
+- key skill/experience gaps,
 - targeted improvement suggestions.
 
 ## Setup Instructions
 1. Clone this repository.
-2. Create and activate a Python virtual environment.
-3. Install dependencies from `requirements.txt`.
-4. Add API credentials in `.env` (never commit secrets).
+2. Open a terminal in the repo root.
+3. Install dependencies:
+   - `python3 -m pip install -r requirements.txt`
+4. Add API credentials in `.env` (never commit secrets):
+   - `HF_TOKEN=hf_xxxxxxxxxxxxxxxxx`
 5. Run the app:
-   - `streamlit run streamlit_app.py`
+   - `python3 -m streamlit run streamlit_app.py`
+6. Add input files:
+   - resume in `data/resume/`
+   - job descriptions in `data/job_descriptions/`
 
 ## Models and Tools Used
 - Python
 - Streamlit
 - Pandas
-- Notebook-based RAG pipeline
-- LLM API (to be finalized during implementation)
+- ChromaDB (vector store)
+- Hugging Face Inference API
+- Notebook-based RAG/prompt iteration workflow
 
 ## Paid vs Free Path
-- Paid path: OpenAI or Gemini API
-- Free path: HuggingFace Inference API or local model setup
+- Paid path: OpenAI API or Gemini API for generation/reranking.
+- Free path: Hugging Face token-based inference with local Python runtime.
 
 ## Key Findings
-TBD after experiments and evaluation.
+- Starter pipeline runs locally with Streamlit and token-based auth.
+- Environment/setup issues were resolved by pinning installation and run commands to the same Python interpreter.
+- Next milestone is benchmarking across multiple real job descriptions (10+ target) and documenting prompt iteration quality changes.
 
 ## File Descriptions
 - `streamlit_app.py`: Option B user interface and analysis flow
@@ -39,3 +48,4 @@ TBD after experiments and evaluation.
 - `evaluation/test_results.md`: tracked evaluation outputs and prompt iterations
 - `memo.md`: business memo
 - `ai_log.md`: AI usage log with progression
+- `data/`: input files (resume + job descriptions)
