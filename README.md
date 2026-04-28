@@ -33,14 +33,10 @@ Current output includes:
 - Hugging Face Inference API
 - Notebook-based RAG/prompt iteration workflow
 
-## Paid vs Free Path
-- Paid path: OpenAI API or Gemini API for generation/reranking.
-- Free path: Hugging Face token-based inference with local Python runtime.
-
 ## Key Findings
 - Starter pipeline runs locally with Streamlit and token-based auth.
 - Environment/setup issues were resolved by pinning installation and run commands to the same Python interpreter.
-- Next milestone is benchmarking across multiple real job descriptions (10+ target) and documenting prompt iteration quality changes.
+- Benchmarking across multiple real job descriptions (10+ target) and documenting prompt iteration quality changes.
 
 ## File Descriptions
 - `streamlit_app.py`: Option B user interface and analysis flow
