@@ -1,8 +1,5 @@
 # BSAN6200 Assignment 5 - Option B (Job Fit Analyzer)
 
-## Student
-Shahzeb Ather
-
 ## Project Description
 This project builds a job fit analyzer using language models and retrieval-augmented generation (RAG). The app compares resume content against job descriptions and returns a fit-oriented analysis.
 
