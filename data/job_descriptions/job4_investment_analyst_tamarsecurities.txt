@@ -1,0 +1,67 @@
+Investment Operations Automation Analyst - Tamar Securities
+
+
+About the job
+
+Tamar Securities is seeking an Investment Operations Automation Analyst to design, build, and maintain automated workflows supporting trading and investment operations as the firm scales.
+
+
+This role sits at the intersection of trading, operations, and technology. The ideal candidate has a strong operational mindset, understands the importance of data integrity in trade execution, and has the technical skill set to replace manual, spreadsheet-driven processes with automated, scalable systems.
+
+
+As account volume and customization increase, this role will be critical in ensuring trade implementation remains efficient, accurate, and controlled.
+
+
+Key Responsibilities
+
+Trading & Investment Operations Automation
+Design and build automated pre-trade workflows to validate account data, trade eligibility, and portfolio customization
+Develop tools that streamline trade readiness across multiple accounts and strategies
+Automate model-to-account mapping, drift analysis, and exception reporting
+Reduce manual review and spreadsheet dependency in trade implementation processes
+
+
+Data Pipelines & Systems Integration
+
+Build and maintain automated data pipelines between custodians, portfolio management systems (e.g., Tamarac), and internal tools
+Ensure data accuracy, consistency, and auditability across systems
+Create standardized datasets and reports used by trading and investment teams
+Identify, troubleshoot, and permanently resolve data breaks or workflow failures
+
+
+Workflow & Process Design
+
+Analyze existing operational workflows and identify opportunities for automation
+Design scalable, repeatable processes that support account growth and customization
+Implement controls, checks, and logging to mitigate operational and trading risk
+Document workflows, systems, and logic clearly for internal use
+
+
+Cross-Functional Collaboration
+
+Work closely with portfolio management, trading, operations, and compliance teams
+Translate investment and operational requirements into technical solutions
+Support ongoing enhancements as strategies, constraints, and account complexity develop
+
+
+Required Qualifications
+
+Advanced proficiency in Excel (complex formulas, Power Query, structured models)
+Strong working knowledge of Python for data processing, automation, and workflow logic
+Experience working with large, multi-account datasets
+Strong attention to detail and understanding of operational risk in trading environments
+Ability to design, build, test, and maintain automation solutions independently
+Certified CFA level 3 - Pass the three levels of the CFA exams
+
+
+Preferred Qualifications
+
+Experience in an RIA, asset manager, hedge fund, custodian, or trading operations role
+Familiarity with portfolio management platforms such as Tamarac or similar systems
+Experience with APIs, SQL, or cloud-based data tools
+Exposure to trading workflows or customized portfolio implementations
+Background in finance, economics, computer science, or a related field
+
+
+Computer systems required:
+Tamarac, Redtail, Excel Professional, Computer Science technician, preferably registered with a Series 65, RIA wealth management firm.

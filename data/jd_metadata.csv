@@ -1,0 +1,11 @@
+filename,company,title,source_url,date_collected
+job1_data_analyst_vimo.txt,VIMO,Data Analyst,https://example.com/job1,5/6/26
+job2_data_analyst_entrylevel_sundayy.txt,Sunday,Entry-Level Data Analyst,https://example.com/job2,5/6/26
+job3_global_data_analyst_dermalogica.txt,Dermalogica,Global Data Analyst,https://example.com/job3,5/6/26
+job4_investment_analyst_tamarsecurities.txt,Tamar Securities,Investment Analyst,https://example.com/job4,5/6/26
+job5_data_analyst_coframe.txt,Coframe,Data Analyst,https://example.com/job5,5/6/26
+job6_operations_analyst_(credit)_atlantic_group .txt,Atlantic Group,Operations Analyst (Credit),https://example.com/job6,5/6/26
+job7_business_intelligence_analyst_insurance_risk_analytics.txt,Insurance Risk Analytics,Business Intelligence Analyst,https://example.com/job7,5/6/26
+job8_data_collection_specialist_cognizant.txt,Cognizant,Data Collection Specialist,https://example.com/job8,5/6/26
+job9_assistant_portfolio_manager_dataannotation.txt,DataAnnotation,Assistant Portfolio Manager,https://example.com/job9,5/6/26
+job10_derivatives_risk_and_operations_east_west_bank.txt,East West Bank,Derivatives Risk and Operations,https://example.com/job10,5/6/26

@@ -1,0 +1,45 @@
+Business Intelligence Analyst - Insurance Risk Analytics
+
+About the job
+
+Position Overview
+
+
+The Business Analyst/ Business Intelligence Analyst supports the business units by delivering reporting, system configuration, and analytical solutions that drive operational efficiency and informed decision-making. This role works closely with internal stakeholders to gather business requirements, translate needs into technical solutions, and support both existing and new insurance programs.
+
+
+Job Description:
+
+Support project management activities for internal systems and process improvements
+Assist with data migration and data validation efforts
+Gather, document, and refine business requirements from underwriting and operational teams
+Support management of software development efforts with third-party vendors
+Contribute to project planning, task tracking, and milestone coordination
+Participate in RFP processes for new software solutions as needed
+Perform underwriting, operational, and financial analysis using internal and external data sources
+Develop and maintain SQL queries for reporting, data exports, and ad hoc analysis
+Build intuitive reports and visualizations for business users and leadership
+Configure and administer systems for existing and new insurance programs
+Support troubleshooting, testing, and user acceptance testing (UAT) activities
+Create and maintain Standard Operating Procedures (SOPs) and Technical Specifications to ensure clarity, repeatability, and proper system documentation
+Additional responsibilities may be assigned as directed by management.
+
+
+Required Job Qualifications:
+
+1–2+ years of experience in a Business Analyst, Data Analyst, or similar analytical role
+Working knowledge of SQL for querying and reporting – 1+ year
+Experience working with databases, Microsoft Excel, and reporting tools
+Ability to gather and clearly document business requirements
+Strong verbal and written communication skills
+Strong organizational and time-management skills
+
+
+Preferred Job Qualifications:
+
+Background in Finance, Mathematics, Computer Science, or a related field
+Experience in the insurance industry
+Exposure to Salesforce or Insurance Management Systems (IMS)
+Exposure to Microsoft Azure ecosystem (e.g., Azure Logic Apps, Azure Data Factory, Power Apps)
+Experience with data visualization tools
+Experience with Visual Basic for Applications

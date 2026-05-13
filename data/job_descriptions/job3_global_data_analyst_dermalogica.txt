@@ -1,0 +1,36 @@
+Global Data Analyst - Dermalogica
+
+About the job
+
+Global Data Analyst – Role Description:
+
+The right person for this role demonstrates a passion and curiosity for identifying and interpreting trends within complex data sets to deliver actionable insights, while also driving efficiencies in existing processes.
+
+Key Job Responsibilities: 
+
+Ownership, Development & Maintenance of Reports & Dashboards (Tableau/Power BI)
+Own and maintain all global and international reports and Tableau Prep Flows (currently transitioning to Power BI) – including scheduled data refreshes, proactive troubleshooting, validating data quality and accuracy, and updating dashboards with relevant new information (e.g. new innovations, markets, channels).
+Take full ownership of sell-out data integrity and act as the primary bridge between business users and IT for sell-in data queries. Drive ongoing simplification and process streamlining across all reporting.
+Provide ad hoc analytical support for global departments, market GMs and senior leadership, responding to dashboard queries and delivering timely, accurate data across markets and channels.
+Design and build new Power BI dashboards end-to-end – from data engineering and modelling through to visualization – with a focus on question-led, actionable insights and performance benchmarking (vs. target, vs. prior year, vs. market).
+Ensure global and regional departments have standardized, user-friendly analytical tools and dashboards for self-sufficient performance management – including monitoring usage, retiring unused workbooks, and keeping all reports accessible in the proper formats. 
+Review current distribution of reports in Excel and determine what can be simplified/automated in Power BI.
+ 
+
+Data Analytics
+Deliver meaningful, actionable analysis across all global markets and channels, providing insights on performance vs. target, vs. prior year, and vs. market benchmarks to inform strategic decision-making.
+Build analytical models to assess how new business opportunities impact existing channels across markets, highlighting potential risk factors and identifying growth opportunities based on cross-market performance and sister brand insights.
+Provide monthly innovation tracking updates across markets as input to global performance calls, analysing launch performance vs. expectations and identifying trends by region and channel.
+Partner with International, Marketing, DTC, and Retail teams to synthesize complex, multi-market data into clear business insights. This includes full-funnel marketing metrics, advertising ROI analysis (e.g. ROAS across digital platforms), and channel KPIs such as conversion rates, new vs. returning customers, and sell-in/sell-out performance.
+
+Experience and Competencies Required:
+
+Bachelor’s degree in Computer Science, Information Systems, Data Science, Business Analytics or another related field.
+3-5 years of previous analytical experience 
+Proficient in SQL, Tableau or Power BI, and Excel, with hands-on experience building visualizations from large data sets and multiple data sources. Additional BI/ETL tools, automation skills (Python, Power Automate), or programming knowledge are a plus.
+Tech savvy with an open mindset about learning new technologies, systems, and tools
+Strong ownership mindset with excellent initiative and follow-through; a track record of proactively identifying opportunities and driving end-to-end solutions in a fast-paced environment
+Strong leadership and communication skills (planning, relationship building, influencing), storytelling with data, influencing without authority, and commercial acumen
+Analytical mindset with the ability to dive deep into complex, ambiguous problems, perform root cause analysis, and ask the right questions to deliver solution-focused outcomes
+Courage to challenge established norms in a constructive way and drive change
+Self-motivated, detail-oriented, and highly organized with a willingness to learn autonomously

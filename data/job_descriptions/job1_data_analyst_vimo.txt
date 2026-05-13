@@ -1,0 +1,55 @@
+Data Analyst - VIMO
+
+Responsibilities:
+
+Monitor, validate, and maintain data flows from call center platforms (e.g., Nice CxOne, Five9, Genesys, Avaya) through ETL/ELT pipelines into the data warehouse and BI layer
+Triage and resolve data discrepancies, reporting anomalies, and integration issues across systems — owning the problem through to root cause and fix
+Map how call center data (call volumes, handle time, CSAT, agent metrics) joins with data from CRM, workforce management, ticketing, and financial systems
+Build and maintain documentation for data dictionaries, field mappings, and transformation logic
+Partner with engineering and platform teams to surface pipeline failures, schema changes, or upstream data quality issues before they reach end-users
+Develop and sustain dashboards and reports in BI tools (e.g., Sisense, Tableau, Power BI) that consolidate cross-system metrics into operational views
+Conduct ad hoc analysis to support operations, finance, and workforce planning teams
+Define and monitor data quality checks and alerting for key reporting metrics
+Communicate data nuances and known limitations to business stakeholders clearly and proactively
+
+Compensation and Benefits:
+
+Competitive compensation - Please note that salary and compensation may vary based on factors such as skills, experience, performance and location.
+We offer a comprehensive benefits package, including but not limited to: Health, Dental, Life, Disability, and Vision insurance
+Healthcare spending or reimbursement accounts (HSA/FSA)
+Retirement benefits (401k)
+Paid time off
+Holidays: 13 paid days per year
+Education assistance or tuition reimbursement-
+Employee discounts for Gym memberships & commuting/travel assistance
+
+Information Security & Data Protection:
+
+This role may involve access to sensitive or regulated information. The candidate is expected to handle all data in accordance with company security, privacy, and data protection policies.
+Compliance with access control, data classification, and applicable legal and regulatory requirements is required.
+
+Basic Qualifications:
+
+5+ years of experience Data Analysis or related fields
+Proficient SQL — complex joins, CTEs, window functions, query optimization
+Hands-on experience with BI platforms (Tableau, Power BI, Looker, or similar)
+Familiarity with ETL/ELT tools or data pipelines (dbt, Fivetran, Airflow, or similar)
+Experience working with call center or contact center data
+Strong analytical thinking and attention to data detail
+Ability to communicate technical findings to non-technical stakeholders
+
+Preferred Qualifications:
+
+Python or R for data wrangling and automation
+Experience with cloud data warehouses (Snowflake, BigQuery, Redshift)
+Knowledge of call center KPIs: AHT, FCR, ASA, CSAT, NPS
+Familiarity with data governance or cataloguing tools
+Experience with CRM data and WFM systems
+Background in operations analytics or workforce management
+
+What Success Looks Like:
+
+Reporting issues are identified and resolved before stakeholders notice them
+Call center and cross-system data is reliably consolidated and consistently defined
+Dashboards reflect a single source of truth that operations and leadership trust
+Data flow documentation is thorough enough for anyone on the team to follow

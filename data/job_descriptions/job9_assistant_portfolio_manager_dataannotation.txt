@@ -1,0 +1,35 @@
+Assistant Portfolio Manager- DataAnnotation
+
+About the job
+
+We're currently expanding into an exciting new area – teaching AI Assistant models to be a more useful tool for finance professionals. We're seeking experienced finance professionals with advanced degrees (MBA+) and professional experience to use their expertise to help shape how AI understands financial principles and decision-making.
+
+Role
+
+We’re growing a team of finance experts, and as the team grows, so will your opportunities. In this role, you might:
+
+Review and improve AI Assistant answers to questions about macro trends, corporate finance, and capital markets
+Leverage your education and work experience to check the reasoning and accuracy of an AI Assistant's work
+Push the models with complex, real-world scenarios and edge cases to see where their reasoning holds up – and where it doesn’t.
+Share clear, structured feedback to help make each new version of the AI smarter and more reliable.
+
+To succeed in this position, you should have expert-level financial reasoning and formal training in a finance-related discipline. A Master’s or PhD (completed or in progress) is strongly preferred. Relevant backgrounds include Financial Accounting, Investment Banking, Corporate Development, Wealth Management, and Insurance Planning.
+
+Benefits
+
+This is a full-time or part-time REMOTE position
+You’ll be able to choose which projects you want to work on
+You can work on your own schedule
+Projects are paid hourly starting at USD $50-$60 per hour, with bonuses on high-quality and high-volume work
+
+Responsibilities
+
+Give AI chatbots diverse and complex problems and evaluate their outputs
+Evaluate the quality produced by AI models for correctness and performance
+
+Qualifications
+
+Fluency in English (native or bilingual level)
+Detail-oriented
+Proficient in financial analysis, financial modeling, data analysis, and other reasoning exercises related to finance management
+A current, in progress, or completed Masters and/or PhD is is preferred but not required

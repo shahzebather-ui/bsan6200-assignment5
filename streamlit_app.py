@@ -22,7 +22,8 @@ load_dotenv()
 st.set_page_config(page_title="Job Fit Analyzer", page_icon="🎯", layout="wide")
 
 # ── Config ──
-MODEL_ID = "HuggingFaceH4/zephyr-7b-beta"
+MODEL_ID = "Qwen/Qwen2.5-7B-Instruct"
+TOP_K_CHUNKS = 5
 
 
 # ══════════════════════════════════════════
@@ -76,23 +77,14 @@ def load_resume(resume_dir="data/resume"):
 
 def ask_llm(hf_client, prompt):
     """Send a prompt to the LLM and return the response."""
-    try:
-        response = hf_client.chat_completion(
-            model=MODEL_ID,
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=500,
-            temperature=0.1,
-            stop=["\n\n\n"],
-            provider="hf-inference",
-        )
-    except TypeError:
-        response = hf_client.chat_completion(
-            model=MODEL_ID,
-            messages=[{"role": "user", "content": prompt}],
-            max_tokens=500,
-            temperature=0.1,
-            stop=["\n\n\n"],
-        )
+    response = hf_client.chat_completion(
+        model=MODEL_ID,
+        messages=[{"role": "user", "content": prompt}],
+        # Skill Gap asks for many bullets; 500 often truncates mid-list.
+        max_tokens=1800,
+        temperature=0.1,
+        stop=["\n\n\n"],
+    )
     return response.choices[0].message.content.strip()
 
 
@@ -100,15 +92,90 @@ def ask_llm(hf_client, prompt):
 # TODO 1: Chunking strategy
 # ══════════════════════════════════════════
 
-def chunk_documents(documents):
-    """
-    TODO: Implement your chunking strategy here.
+def chunk_documents_paragraph(documents, max_chars=1200, overlap=150):
+    """Strategy 1: merge paragraphs up to max_chars with tail overlap."""
+    chunks = []
+    for doc in documents:
+        text = doc["text"].strip()
+        source = doc["source"]
+        paragraphs = [p.strip() for p in text.split("\n\n") if p.strip()]
+        current = ""
+        for p in paragraphs:
+            if len(p) > max_chars:
+                for part in p.replace(". ", ".\n").split("\n"):
+                    part = part.strip()
+                    if not part:
+                        continue
+                    if len(current) + len(part) + 2 <= max_chars:
+                        current = f"{current}\n\n{part}".strip()
+                    else:
+                        if current:
+                            chunks.append({"text": current, "source": source})
+                        tail = current[-overlap:] if overlap and current else ""
+                        current = f"{tail}\n\n{part}".strip() if tail else part
+            else:
+                if len(current) + len(p) + 2 <= max_chars:
+                    current = f"{current}\n\n{p}".strip() if current else p
+                else:
+                    if current:
+                        chunks.append({"text": current, "source": source})
+                    tail = current[-overlap:] if overlap and current else ""
+                    current = f"{tail}\n\n{p}".strip() if tail else p
+        if current:
+            chunks.append({"text": current, "source": source})
+    return chunks
 
-    Input: list of dicts [{"text": "...", "source": "filename"}, ...]
-    Output: list of dicts [{"text": "chunk text", "source": "filename"}, ...]
-    """
-    # PLACEHOLDER: no chunking
-    return documents
+
+def chunk_documents_fixed_window(documents, window=900, stride=600):
+    """Strategy 2: fixed-size character windows (for notebook comparison)."""
+    chunks = []
+    for doc in documents:
+        text = doc["text"].strip()
+        source = doc["source"]
+        if not text:
+            continue
+        start = 0
+        while start < len(text):
+            piece = text[start : start + window]
+            if piece.strip():
+                chunks.append({"text": piece.strip(), "source": source})
+            start += stride
+    return chunks
+
+
+def chunk_documents(documents):
+    """Default pipeline chunker (paragraph-based)."""
+    return chunk_documents_paragraph(documents)
+
+
+def build_retrieval_query(analysis_type, jd_text, resume_text):
+    """Short query for similarity search over JD chunks."""
+    resume_snip = (resume_text[:500] + "…") if len(resume_text) > 500 else resume_text
+    if analysis_type == "Skill Gap Report":
+        return f"skills qualifications requirements responsibilities experience education\n{resume_snip}"
+    if analysis_type == "Keyword Alignment":
+        return f"keywords tools technologies must have preferred requirements\n{resume_snip}"
+    return f"overall role fit responsibilities summary\n{jd_text[:400]}\n{resume_snip}"
+
+
+def retrieve_jd_context(collection, source_filename, analysis_type, jd_text, resume_text, top_k=TOP_K_CHUNKS):
+    """Retrieve top-k JD chunks for the selected posting (RAG context)."""
+    q = build_retrieval_query(analysis_type, jd_text, resume_text)
+    try:
+        res = collection.query(
+            query_texts=[q],
+            n_results=top_k,
+            where={"source": source_filename},
+        )
+    except Exception:
+        res = collection.query(query_texts=[q], n_results=top_k)
+    docs = (res.get("documents") or [[]])[0]
+    metas = (res.get("metadatas") or [[]])[0]
+    lines = []
+    for i, d in enumerate(docs):
+        src = metas[i].get("source", source_filename) if i < len(metas) else source_filename
+        lines.append(f"[chunk {i + 1} | {src}]\n{d}")
+    return "\n\n".join(lines) if lines else ""
 
 
 # ══════════════════════════════════════════
@@ -118,34 +185,62 @@ def chunk_documents(documents):
 # with 3+ iterations documented.
 # ══════════════════════════════════════════
 
-SKILL_GAP_PROMPT = """TODO: Write your Skill Gap analysis prompt here.
+SKILL_GAP_PROMPT = """
+You are a job-fit evaluator.
 
-It should:
-- Compare the candidate's resume against the job description
-- List matching skills, missing skills, and recommended actions
-- Use ONLY the provided context
+Task:
+Compare the candidate resume to the job description and produce a skill gap report.
 
-Delete this placeholder and write your own."""
+Rules:
+- Use only the provided resume and JD text.
+- Do not invent experience or certifications.
+- Be concise and specific.
 
-
-KEYWORD_PROMPT = """TODO: Write your Keyword Alignment prompt here.
-
-It should:
-- Extract key terms from the JD
-- Check which appear (or have equivalents) in the resume
-- Report a match percentage
-
-Delete this placeholder and write your own."""
+Output:
+1) Matching Skills (5-10 bullets)
+2) Missing Skills / Gaps (5-10 bullets)
+3) Recommended Actions (5 bullets)
+4) Fit Score (0-100) with a short explanation
+"""
 
 
-FIT_SUMMARY_PROMPT = """TODO: Write your Fit Summary prompt here.
+KEYWORD_PROMPT = """
+You are a keyword alignment assistant.
 
-It should:
-- Produce a 3-4 sentence narrative assessment
-- Cite specific evidence from both documents
-- Be balanced (strengths and gaps)
+Task:
+Extract important keywords from the job description and check whether they appear
+(or close equivalent appears) in the candidate resume.
 
-Delete this placeholder and write your own."""
+Rules:
+- Use only provided text.
+- Avoid over-claiming matches.
+
+Output:
+1) Top JD Keywords (10-20)
+2) Matched Keywords
+3) Missing Keywords
+4) Keyword Match Rate (%) = matched / total * 100
+5) Top 3 keywords to add or emphasize in resume
+"""
+
+
+FIT_SUMMARY_PROMPT = """
+You are a hiring-side reviewer.
+
+Task:
+Write a brief fit summary comparing this resume to the job description.
+
+Rules:
+- Use evidence from both texts.
+- Keep it realistic and balanced.
+- No hallucinations.
+
+Output:
+- Fit Summary (3-4 sentences)
+- Top 3 Strengths (bullets)
+- Top 3 Concerns (bullets)
+- Recommendation: Strong Fit / Moderate Fit / Low Fit
+"""
 
 
 ANALYSIS_TYPES = {
@@ -195,11 +290,18 @@ def load_llm():
 # Analysis logic
 # ══════════════════════════════════════════
 
-def run_analysis(hf_client, analysis_prompt, jd_text, resume_text):
-    """Run a single analysis: format prompt with JD + resume, call LLM."""
-    full_prompt = f"""{analysis_prompt}
+def run_analysis(hf_client, analysis_prompt, jd_text, resume_text, retrieved_context=""):
+    """Run analysis with optional RAG context from retrieved JD chunks."""
+    ctx_block = ""
+    if retrieved_context.strip():
+        ctx_block = f"""
+Retrieved excerpts from this job description (use as primary JD evidence; cite chunk numbers when helpful):
+{retrieved_context}
 
-Job Description:
+"""
+    full_prompt = f"""{analysis_prompt}
+{ctx_block}
+Full Job Description:
 {jd_text}
 
 Candidate Resume:
@@ -240,6 +342,7 @@ with st.sidebar:
     st.write(f"**JDs loaded:** {len(jd_docs)}")
     st.write(f"**Resume loaded:** Yes")
     st.write(f"**Model:** {MODEL_ID}")
+    st.write(f"**Retrieval top-k:** {TOP_K_CHUNKS}")
     st.divider()
     st.caption("BSAN 6200 | Assignment 5 | Option B")
 
@@ -284,7 +387,12 @@ if st.button("🔍 Run Analysis", type="primary", use_container_width=True):
     with st.spinner(f"Running {analysis_type}..."):
         try:
             prompt = ANALYSIS_TYPES[analysis_type]
-            result = run_analysis(hf_client, prompt, jd_text, resume_text)
+            retrieved = retrieve_jd_context(
+                collection, selected_filename, analysis_type, jd_text, resume_text
+            )
+            with st.expander("Retrieved JD chunks (RAG)", expanded=False):
+                st.text(retrieved or "(no retrieval results)")
+            result = run_analysis(hf_client, prompt, jd_text, resume_text, retrieved)
             st.subheader(f"Results: {analysis_type}")
             st.markdown(result)
         except Exception as e:
@@ -296,7 +404,12 @@ if st.button("📊 Run All 3 Analyses", use_container_width=True):
     for name, prompt in ANALYSIS_TYPES.items():
         with st.spinner(f"Running {name}..."):
             try:
-                result = run_analysis(hf_client, prompt, jd_text, resume_text)
+                retrieved = retrieve_jd_context(
+                    collection, selected_filename, name, jd_text, resume_text
+                )
+                with st.expander(f"Retrieved chunks — {name}", expanded=False):
+                    st.text(retrieved or "(no retrieval results)")
+                result = run_analysis(hf_client, prompt, jd_text, resume_text, retrieved)
                 st.subheader(name)
                 st.markdown(result)
                 st.divider()

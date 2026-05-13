@@ -1,0 +1,42 @@
+Data Analyst - Coframe
+
+About the job
+
+
+What You'll Do:
+
+Respond directly to customer data and analytics requests
+Build ad-hoc reports and answer business questions quickly
+Align metrics across multiple analytics systems
+Investigate and resolve data discrepancies
+Build tools and automate recurring requests
+Help turn one-off requests into internal products and processes
+
+
+You May Be a Fit If:
+
+Strong skills building queries, reports, and dashboards in complex data environments
+Clear communication with non-technical teams internally and on the client side
+Clear communication with data and technical teams on both sides
+Ability to move fast while staying careful and accurate in conclusions
+Strong adoption of AI tools, with good judgment about their strengths and limits
+Good prioritization skills across many incoming requests
+
+
+Bonus Points:
+
+Experience with Optimizely, VWO, LaunchDarkly, or similar experimentation platforms.
+Experienced with GA4, Segment, Amplitude, or Heap and understand how data flows from browser event to dashboard.
+Familiarity with Google Tag Manager or Tealium.
+Exposure to Shopify or SaaS product environments.
+You manage competing priorities across multiple client engagements without losing quality.
+Excited about AI-powered experimentation and autonomous agents.
+
+
+Compensation 
+
+Base: $100,000 - $170,000
+Equity: Meaningful early-stage equity.
+
+
+Final offer amounts are determined by multiple factors including experience and expertise.
