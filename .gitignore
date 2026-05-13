@@ -6,3 +6,6 @@ __pycache__/
 
 # Local logging helper — keep out of repo / submission tree
 scripts/
+
+# Local-only notes (not for GitHub)
+local/
