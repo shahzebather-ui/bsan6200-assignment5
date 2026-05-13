@@ -321,15 +321,19 @@ def parse_fit_score(text: str):
     if not text:
         return None
     patterns = [
-        r"Fit\s*Score\s*(?:\(0[-–]100\))?\s*:?\s*(\d{1,3})\b",
-        r"\*\*Fit\s*Score:?\*\*\s*(\d{1,3})\b",
+        # Section header then score on same or next line
+        r"(?:^|\n)\s*4\)\s*Fit\s*Score[^\n]*\n+\s*\**(\d{1,3})\**",
+        r"Fit\s*Score\s*(?:\(0[-–]100\))?\s*:?\s*\**(\d{1,3})\**",
+        r"\*\*Fit\s*Score[^*]*\*\*\s*:?\s*(\d{1,3})\b",
         r"fit\s*score\s+of\s+(\d{1,3})\b",
+        r"Fit\s*Score[^\d]{0,60}?(\d{1,3})\s*(?:/|\(|$|\n)",
     ]
     for pat in patterns:
-        m = re.search(pat, text, re.I)
+        m = re.search(pat, text, re.I | re.MULTILINE)
         if m:
             v = int(m.group(1))
-            return v if 0 <= v <= 100 else None
+            if 0 <= v <= 100:
+                return v
     return None
 
 
@@ -338,15 +342,27 @@ def parse_keyword_match_pct(text: str):
     if not text:
         return None
     patterns = [
-        r"Keyword\s*Match\s*Rate\s*(?:\(%\))?\s*:?\s*(\d{1,3})\s*%",
-        r"Match\s*Rate\s*:?\s*(\d{1,3})\s*%",
+        r"Keyword\s*Match\s*Rate\s*(?:\(%\))?\s*:?\s*\**(\d{1,3})\**",
+        r"Match\s*Rate\s*(?:\(%\))?\s*:?\s*\**(\d{1,3})\**",
         r"\*\*Keyword\s*Match\s*Rate[^*]*\*\*\s*:?\s*(\d{1,3})\s*%",
+        r"(?:^|\n)\s*4\)\s*Keyword\s*Match[^\n]*\n+\s*(\d{1,3})\s*%",
     ]
     for pat in patterns:
-        m = re.search(pat, text, re.I)
+        m = re.search(pat, text, re.I | re.MULTILINE)
         if m:
             v = int(m.group(1))
-            return v if 0 <= v <= 100 else None
+            if 0 <= v <= 100:
+                return v
+    # Fallback: matched / total * 100
+    mm = re.search(
+        r"Matched\s*Keywords?\s*:?\s*(\d+).{0,400}?Total\s*Keywords?\s*:?\s*(\d+)",
+        text,
+        re.I | re.DOTALL,
+    )
+    if mm:
+        a, b = int(mm.group(1)), int(mm.group(2))
+        if b > 0:
+            return int(round(100 * a / b))
     return None
 
 
@@ -473,14 +489,33 @@ with tab_analyze:
     )
     m1, m2, m3, m4 = st.columns(4)
     with m1:
-        st.metric("Fit score (latest)", scores["fit"] if scores["fit"] is not None else "—")
+        st.metric(
+            "Fit score (latest)",
+            str(scores["fit"]) if scores["fit"] is not None else "Pending",
+            help="Runs from Skill Gap or Fit Summary. Tiles stay Pending until you run one for this job.",
+        )
     with m2:
-        st.metric("Keyword match (latest)", f"{scores['kw']}%" if scores["kw"] is not None else "—")
+        st.metric(
+            "Keyword match (latest)",
+            f"{scores['kw']}%" if scores["kw"] is not None else "Pending",
+            help="Runs from Keyword Alignment. Computed from match rate line or Matched/Total counts.",
+        )
     with m3:
-        st.metric("JD chunks (top-k)", str(TOP_K_CHUNKS))
+        st.metric(
+            "JD chunks (top-k)",
+            str(TOP_K_CHUNKS),
+            help="How many retrieved JD chunks are sent to the model for this posting.",
+        )
     with m4:
-        st.metric("Job postings", str(len(jd_docs)))
-    st.caption("Run **Skill Gap** or **Fit Summary** to refresh fit score; run **Keyword Alignment** to refresh keyword %.")
+        st.metric(
+            "Job postings",
+            str(len(jd_docs)),
+            help="Number of job description files loaded into the vector index.",
+        )
+    st.caption(
+        "First two tiles stay **Pending** until you run the matching analysis for **this** job posting "
+        "(scores are saved per JD for this browser session)."
+    )
 
     col_select, col_analysis = st.columns([1, 1])
     with col_select:
