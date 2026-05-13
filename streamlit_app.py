@@ -185,6 +185,7 @@ def retrieve_jd_context(collection, source_filename, analysis_type, jd_text, res
 # with 3+ iterations documented.
 # ══════════════════════════════════════════
 
+# Prompt iteration v3: gap severity (High/Medium/Low) + exactly 3 recommendations (was 5 in v2).
 SKILL_GAP_PROMPT = """
 You are a job-fit evaluator.
 
@@ -195,11 +196,15 @@ Rules:
 - Use only the provided resume and JD text.
 - Do not invent experience or certifications.
 - Be concise and specific.
+- For every strength and every gap, include one short quote from the JD or resume as evidence.
+- Return exactly 3 strengths and exactly 3 gaps.
+- For each gap, start the bullet with a severity label in this exact form: **[Severity: High]**, **[Severity: Medium]**, or **[Severity: Low]**.
+  Use **High** when the JD states must-have / required / minimum years / core responsibility language; **Medium** for important but not clearly mandatory; **Low** for nice-to-have or bonus language.
 
 Output:
-1) Matching Skills (5-10 bullets)
-2) Missing Skills / Gaps (5-10 bullets)
-3) Recommended Actions (5 bullets)
+1) Matching Skills (exactly 3 bullets)
+2) Missing Skills / Gaps (exactly 3 bullets; each bullet begins with **[Severity: High|Medium|Low]** then the gap text and evidence quote)
+3) Recommended Actions (exactly 3 bullets; each maps to one gap or one theme, no filler)
 4) Fit Score (0-100) with a short explanation
 """
 
