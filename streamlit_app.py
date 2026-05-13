@@ -82,7 +82,7 @@ def ask_llm(hf_client, prompt):
         model=MODEL_ID,
         messages=[{"role": "user", "content": prompt}],
         # Skill Gap asks for many bullets; 500 often truncates mid-list.
-        max_tokens=1800,
+        max_tokens=2400,
         temperature=0.1,
         stop=["\n\n\n"],
     )
@@ -321,12 +321,13 @@ def parse_fit_score(text: str):
     if not text:
         return None
     patterns = [
-        # Section header then score on same or next line
         r"(?:^|\n)\s*4\)\s*Fit\s*Score[^\n]*\n+\s*\**(\d{1,3})\**",
         r"Fit\s*Score\s*(?:\(0[-–]100\))?\s*:?\s*\**(\d{1,3})\**",
         r"\*\*Fit\s*Score[^*]*\*\*\s*:?\s*(\d{1,3})\b",
         r"fit\s*score\s+of\s+(\d{1,3})\b",
         r"Fit\s*Score[^\d]{0,60}?(\d{1,3})\s*(?:/|\(|$|\n)",
+        r"(?:the\s+)?fit\s*score\s+is\s+(\d{1,3})\b",
+        r"(?:overall|final)\s+fit\s*:?\s*(\d{1,3})\b",
     ]
     for pat in patterns:
         m = re.search(pat, text, re.I | re.MULTILINE)
@@ -484,38 +485,8 @@ with tab_analyze:
             jd_text = doc["text"]
             break
 
-    scores = st.session_state.scores_by_jd.get(
-        selected_filename, {"fit": None, "kw": None}
-    )
-    m1, m2, m3, m4 = st.columns(4)
-    with m1:
-        st.metric(
-            "Fit score (latest)",
-            str(scores["fit"]) if scores["fit"] is not None else "Pending",
-            help="Runs from Skill Gap or Fit Summary. Tiles stay Pending until you run one for this job.",
-        )
-    with m2:
-        st.metric(
-            "Keyword match (latest)",
-            f"{scores['kw']}%" if scores["kw"] is not None else "Pending",
-            help="Runs from Keyword Alignment. Computed from match rate line or Matched/Total counts.",
-        )
-    with m3:
-        st.metric(
-            "JD chunks (top-k)",
-            str(TOP_K_CHUNKS),
-            help="How many retrieved JD chunks are sent to the model for this posting.",
-        )
-    with m4:
-        st.metric(
-            "Job postings",
-            str(len(jd_docs)),
-            help="Number of job description files loaded into the vector index.",
-        )
-    st.caption(
-        "First two tiles stay **Pending** until you run the matching analysis for **this** job posting "
-        "(scores are saved per JD for this browser session)."
-    )
+    if "last_result_by_jd" not in st.session_state:
+        st.session_state.last_result_by_jd = {}
 
     col_select, col_analysis = st.columns([1, 1])
     with col_select:
@@ -543,13 +514,18 @@ with tab_analyze:
                     st.text(retrieved or "(no retrieval results)")
                 result = run_analysis(hf_client, prompt, jd_text, resume_text, retrieved)
                 update_parsed_scores(selected_filename, analysis_type, result)
-                st.subheader(f"Results — {analysis_type}")
-                st.markdown(result)
+                st.session_state.last_result_by_jd[selected_filename] = {
+                    "kind": "single",
+                    "title": analysis_type,
+                    "body": result,
+                }
+                st.rerun()
             except Exception as e:
                 st.error(f"Something went wrong: {str(e)}")
 
     if st.button("Run all 3 analyses", use_container_width=True, disabled=run_disabled):
         resume_text = st.session_state.resume_text
+        blocks = []
         for name, prompt in ANALYSIS_TYPES.items():
             with st.spinner(f"Running {name}..."):
                 try:
@@ -560,8 +536,52 @@ with tab_analyze:
                         st.text(retrieved or "(no retrieval results)")
                     result = run_analysis(hf_client, prompt, jd_text, resume_text, retrieved)
                     update_parsed_scores(selected_filename, name, result)
-                    st.subheader(name)
-                    st.markdown(result)
-                    st.divider()
+                    blocks.append((name, result))
                 except Exception as e:
                     st.error(f"{name} failed: {str(e)}")
+        if blocks:
+            st.session_state.last_result_by_jd[selected_filename] = {
+                "kind": "all",
+                "blocks": blocks,
+            }
+            st.rerun()
+
+    scores = st.session_state.scores_by_jd.get(
+        selected_filename, {"fit": None, "kw": None}
+    )
+    dash = "—"
+    m1, m2, m3, m4 = st.columns(4)
+    with m1:
+        st.metric(
+            "Fit score (latest)",
+            str(scores["fit"]) if scores["fit"] is not None else dash,
+            help="Filled after Skill Gap or Fit Summary completes for this posting.",
+        )
+    with m2:
+        st.metric(
+            "Keyword match (latest)",
+            f"{scores['kw']}%" if scores["kw"] is not None else dash,
+            help="Filled after Keyword Alignment completes for this posting.",
+        )
+    with m3:
+        st.metric(
+            "JD chunks (top-k)",
+            str(TOP_K_CHUNKS),
+            help="Retrieved JD chunks sent to the model (RAG top-k).",
+        )
+    with m4:
+        st.metric("Job postings", str(len(jd_docs)), help="Job descriptions indexed.")
+    st.caption(
+        "Fit and keyword tiles show **—** until a run finishes; they update on the **next** paint after analysis."
+    )
+
+    payload = st.session_state.last_result_by_jd.get(selected_filename)
+    if payload:
+        if payload.get("kind") == "single":
+            st.subheader(f"Results — {payload['title']}")
+            st.markdown(payload["body"])
+        elif payload.get("kind") == "all":
+            for name, md in payload["blocks"]:
+                st.subheader(name)
+                st.markdown(md)
+                st.divider()
