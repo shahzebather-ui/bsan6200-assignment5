@@ -2,3 +2,7 @@
 __pycache__/
 .ipynb_checkpoints/
 *.pyc
+.DS_Store
+
+# Local logging helper — keep out of repo / submission tree
+scripts/

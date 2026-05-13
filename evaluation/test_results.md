@@ -193,3 +193,29 @@ Evaluate how well the Option B pipeline identifies resume-job alignment, gaps, a
 - What failed: The five recommended actions are fairly generic compared to the sharper, cited gap bullets.
 - Next change: For v3, cap recommendations at three bullets and add High/Medium/Low severity on each gap.
 
+
+
+### Run R05131544
+- Date: 2026-05-13 15:50
+- JD: `job4_investment_analyst_tamarsecurities.txt`
+- Prompt version: v3
+- Analysis type: Skill Gap Report
+- Quant notes: fit score=75, keyword match=85%, latency=N/A
+- Output summary: V3 gave 3 strengths, 3 severity gaps, 3 actions, fit 75.
+- What worked: Severity tags and the three-item recommendation list made the report shorter and easier to scan than five actions in v2.
+- What failed: Evidence was stronger on strengths than on one or two gap bullets.
+- Next change: Freeze v3 code; document severity decisions and edge cases.
+
+
+
+### Run R05131551
+- Date: 2026-05-13 15:58
+- JD: `job5_data_analyst_coframe.txt`
+- Prompt version: v3
+- Analysis type: Skill Gap Report
+- Quant notes: fit score=85, keyword match=75%, latency=N/A
+- Output summary: V3 gave 3 strengths with quotes, 3 severity-tagged gaps, 3 actions, fit 85, keyword match 75%.
+- What worked: The 3 / 3 / 3 layout stayed tight and the three actions each pointed at one of the listed tool gaps.
+- What failed: Recommended actions read a bit generic compared to the job description's exact tool name
+- Next change: No further prompt or app changes planned; v3 is the last coded iteration documented.
+

@@ -15,6 +15,7 @@ import chromadb
 from huggingface_hub import InferenceClient
 import pandas as pd
 import os
+import re
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -315,6 +316,57 @@ Candidate Resume:
     return ask_llm(hf_client, full_prompt)
 
 
+def parse_fit_score(text: str):
+    """Best-effort parse of 0–100 fit score from model output."""
+    if not text:
+        return None
+    patterns = [
+        r"Fit\s*Score\s*(?:\(0[-–]100\))?\s*:?\s*(\d{1,3})\b",
+        r"\*\*Fit\s*Score:?\*\*\s*(\d{1,3})\b",
+        r"fit\s*score\s+of\s+(\d{1,3})\b",
+    ]
+    for pat in patterns:
+        m = re.search(pat, text, re.I)
+        if m:
+            v = int(m.group(1))
+            return v if 0 <= v <= 100 else None
+    return None
+
+
+def parse_keyword_match_pct(text: str):
+    """Parse keyword match rate percent from Keyword Alignment output."""
+    if not text:
+        return None
+    patterns = [
+        r"Keyword\s*Match\s*Rate\s*(?:\(%\))?\s*:?\s*(\d{1,3})\s*%",
+        r"Match\s*Rate\s*:?\s*(\d{1,3})\s*%",
+        r"\*\*Keyword\s*Match\s*Rate[^*]*\*\*\s*:?\s*(\d{1,3})\s*%",
+    ]
+    for pat in patterns:
+        m = re.search(pat, text, re.I)
+        if m:
+            v = int(m.group(1))
+            return v if 0 <= v <= 100 else None
+    return None
+
+
+def update_parsed_scores(jd_key: str, analysis_type: str, result_text: str):
+    """Store latest fit / keyword % for dashboard tiles (per JD)."""
+    if "scores_by_jd" not in st.session_state:
+        st.session_state.scores_by_jd = {}
+    if jd_key not in st.session_state.scores_by_jd:
+        st.session_state.scores_by_jd[jd_key] = {"fit": None, "kw": None}
+    s = st.session_state.scores_by_jd[jd_key]
+    if analysis_type == "Keyword Alignment":
+        p = parse_keyword_match_pct(result_text)
+        if p is not None:
+            s["kw"] = p
+    if analysis_type in ("Skill Gap Report", "Fit Summary"):
+        f = parse_fit_score(result_text)
+        if f is not None:
+            s["fit"] = f
+
+
 # ══════════════════════════════════════════
 # UI
 # ══════════════════════════════════════════
@@ -322,12 +374,32 @@ Candidate Resume:
 collection, jd_docs = load_vectorstore()
 metadata = load_metadata()
 hf_client = load_llm()
-resume_text = load_resume()
 
-st.title("🎯 Job Fit Analyzer")
-st.caption("Compare your resume against job descriptions.")
+if "resume_text" not in st.session_state:
+    st.session_state.resume_text = load_resume()
+if "scores_by_jd" not in st.session_state:
+    st.session_state.scores_by_jd = {}
 
-# ── Error checks ──
+resume_text = st.session_state.resume_text
+
+st.markdown(
+    """
+<style>
+    div[data-testid="stMetric"] {
+        background: linear-gradient(145deg, #152238 0%, #0f2847 100%);
+        border: 1px solid rgba(56, 189, 248, 0.25);
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+    }
+    div[data-testid="stMetric"] label { color: #94a3b8 !important; }
+</style>
+""",
+    unsafe_allow_html=True,
+)
+
+st.title("Job Fit Analyzer")
+st.caption("RAG-assisted resume ↔ job description comparison · BSAN 6200 Option B")
+
 if not hf_client:
     st.error("HF_TOKEN not found. Add it to your .env file.")
     st.stop()
@@ -336,27 +408,49 @@ if collection is None:
     st.error("No JDs found in data/job_descriptions/. Add your job description files there.")
     st.stop()
 
-if not resume_text:
-    st.error("No resume found in data/resume/. Add your resume file there.")
-    st.stop()
-
 # ── Sidebar ──
 with st.sidebar:
     st.header("About")
     st.write("This tool compares your resume against job descriptions using RAG.")
     st.write(f"**JDs loaded:** {len(jd_docs)}")
-    st.write(f"**Resume loaded:** Yes")
-    st.write(f"**Model:** {MODEL_ID}")
+    has_resume = bool(resume_text and resume_text.strip())
+    st.write("**Resume:**", "Loaded" if has_resume else "Missing — use **Resume** tab")
+    st.write(f"**Model:** `{MODEL_ID}`")
     st.write(f"**Retrieval top-k:** {TOP_K_CHUNKS}")
     st.divider()
     st.caption("BSAN 6200 | Assignment 5 | Option B")
 
-# ── JD selector ──
-col_select, col_analysis = st.columns([1, 1])
+tab_analyze, tab_resume = st.tabs(["Analyze", "Resume"])
 
-with col_select:
-    st.subheader("1. Select a Job Description")
+with tab_resume:
+    st.subheader("Resume source")
+    st.caption("Upload a **PDF** or **TXT** here for this session, or keep the file in `data/resume/`.")
+    up = st.file_uploader("Upload resume", type=["pdf", "txt"], key="resume_uploader")
+    if up is not None:
+        try:
+            if up.name.lower().endswith(".pdf"):
+                from io import BytesIO
 
+                st.session_state.resume_text = load_pdf_file(BytesIO(up.getvalue()))
+            else:
+                st.session_state.resume_text = up.getvalue().decode("utf-8", errors="replace")
+            st.success(f"Using uploaded file: **{up.name}**")
+        except Exception as e:
+            st.error(f"Could not read file: {e}")
+    c1, c2 = st.columns(2)
+    with c1:
+        if st.button("Reload resume from disk", help="Reads first PDF/TXT in data/resume/"):
+            st.session_state.resume_text = load_resume()
+            st.rerun()
+    with c2:
+        if st.button("Clear session resume"):
+            st.session_state.resume_text = ""
+            st.rerun()
+    if resume_text and resume_text.strip():
+        with st.expander("Preview (first 1200 chars)"):
+            st.text(resume_text[:1200] + ("…" if len(resume_text) > 1200 else ""))
+
+with tab_analyze:
     if not metadata.empty:
         jd_options = {
             f"{row['company']} -- {row['title']}": row["filename"]
@@ -365,58 +459,74 @@ with col_select:
     else:
         jd_options = {doc["source"]: doc["source"] for doc in jd_docs}
 
-    selected_label = st.selectbox("Choose a JD:", list(jd_options.keys()))
+    selected_label = st.selectbox("Job description", list(jd_options.keys()))
     selected_filename = jd_options[selected_label]
 
-    # Find the JD text
     jd_text = ""
     for doc in jd_docs:
         if doc["source"] == selected_filename:
             jd_text = doc["text"]
             break
 
-    with st.expander("Preview job description"):
-        st.text(jd_text[:1000] + ("..." if len(jd_text) > 1000 else ""))
-
-with col_analysis:
-    st.subheader("2. Choose Analysis Type")
-    analysis_type = st.radio(
-        "Select analysis:",
-        list(ANALYSIS_TYPES.keys()),
+    scores = st.session_state.scores_by_jd.get(
+        selected_filename, {"fit": None, "kw": None}
     )
+    m1, m2, m3, m4 = st.columns(4)
+    with m1:
+        st.metric("Fit score (latest)", scores["fit"] if scores["fit"] is not None else "—")
+    with m2:
+        st.metric("Keyword match (latest)", f"{scores['kw']}%" if scores["kw"] is not None else "—")
+    with m3:
+        st.metric("JD chunks (top-k)", str(TOP_K_CHUNKS))
+    with m4:
+        st.metric("Job postings", str(len(jd_docs)))
+    st.caption("Run **Skill Gap** or **Fit Summary** to refresh fit score; run **Keyword Alignment** to refresh keyword %.")
 
-# ── Run analysis ──
-st.divider()
+    col_select, col_analysis = st.columns([1, 1])
+    with col_select:
+        st.subheader("Job description preview")
+        with st.expander("First 1000 characters"):
+            st.text(jd_text[:1000] + ("..." if len(jd_text) > 1000 else ""))
+    with col_analysis:
+        st.subheader("Analysis type")
+        analysis_type = st.radio("Select one:", list(ANALYSIS_TYPES.keys()), label_visibility="collapsed")
 
-if st.button("🔍 Run Analysis", type="primary", use_container_width=True):
-    with st.spinner(f"Running {analysis_type}..."):
-        try:
-            prompt = ANALYSIS_TYPES[analysis_type]
-            retrieved = retrieve_jd_context(
-                collection, selected_filename, analysis_type, jd_text, resume_text
-            )
-            with st.expander("Retrieved JD chunks (RAG)", expanded=False):
-                st.text(retrieved or "(no retrieval results)")
-            result = run_analysis(hf_client, prompt, jd_text, resume_text, retrieved)
-            st.subheader(f"Results: {analysis_type}")
-            st.markdown(result)
-        except Exception as e:
-            st.error(f"Something went wrong: {str(e)}")
+    st.divider()
+    run_disabled = not (resume_text and resume_text.strip())
+    if run_disabled:
+        st.warning("Add a resume (disk folder or **Resume** tab) before running analysis.")
 
-st.divider()
-
-if st.button("📊 Run All 3 Analyses", use_container_width=True):
-    for name, prompt in ANALYSIS_TYPES.items():
-        with st.spinner(f"Running {name}..."):
+    if st.button("Run Analysis", type="primary", use_container_width=True, disabled=run_disabled):
+        resume_text = st.session_state.resume_text
+        with st.spinner(f"Running {analysis_type}..."):
             try:
+                prompt = ANALYSIS_TYPES[analysis_type]
                 retrieved = retrieve_jd_context(
-                    collection, selected_filename, name, jd_text, resume_text
+                    collection, selected_filename, analysis_type, jd_text, resume_text
                 )
-                with st.expander(f"Retrieved chunks — {name}", expanded=False):
+                with st.expander("Retrieved JD chunks (RAG)", expanded=False):
                     st.text(retrieved or "(no retrieval results)")
                 result = run_analysis(hf_client, prompt, jd_text, resume_text, retrieved)
-                st.subheader(name)
+                update_parsed_scores(selected_filename, analysis_type, result)
+                st.subheader(f"Results — {analysis_type}")
                 st.markdown(result)
-                st.divider()
             except Exception as e:
-                st.error(f"{name} failed: {str(e)}")
+                st.error(f"Something went wrong: {str(e)}")
+
+    if st.button("Run all 3 analyses", use_container_width=True, disabled=run_disabled):
+        resume_text = st.session_state.resume_text
+        for name, prompt in ANALYSIS_TYPES.items():
+            with st.spinner(f"Running {name}..."):
+                try:
+                    retrieved = retrieve_jd_context(
+                        collection, selected_filename, name, jd_text, resume_text
+                    )
+                    with st.expander(f"Retrieved chunks — {name}", expanded=False):
+                        st.text(retrieved or "(no retrieval results)")
+                    result = run_analysis(hf_client, prompt, jd_text, resume_text, retrieved)
+                    update_parsed_scores(selected_filename, name, result)
+                    st.subheader(name)
+                    st.markdown(result)
+                    st.divider()
+                except Exception as e:
+                    st.error(f"{name} failed: {str(e)}")

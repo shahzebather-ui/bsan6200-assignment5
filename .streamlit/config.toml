@@ -1,0 +1,10 @@
+# Blue-forward dark theme (BSAN6200 Option B)
+[theme]
+primaryColor = "#38bdf8"
+backgroundColor = "#0b1220"
+secondaryBackgroundColor = "#152238"
+textColor = "#e8eef8"
+font = "sans serif"
+
+[server]
+headless = true
