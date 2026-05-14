@@ -1,4 +1,6 @@
 streamlit>=1.35.0
+# ChromaDB -> OpenTelemetry -> protobuf: protobuf 5 breaks generated protos on some Cloud builds (TypeError in descriptor.py).
+protobuf>=4.25.3,<5
 chromadb>=0.5.0
 huggingface-hub>=0.30.0
 python-dotenv>=1.0.0
