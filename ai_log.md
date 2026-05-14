@@ -67,9 +67,3 @@ BSAN6200 Assignment 5 — Option B. Each entry includes **Date**, **Tool**, what
 - **What I asked:** Save notebook outputs before deadline.  
 - **What I used:** `jupyter nbconvert --execute` (Anaconda `python`).  
 - **What I modified:** Ran notebook in-place so cells show outputs in the submitted `.ipynb`.
-
----
-
-**Progression:** scaffolding → API/runtime → RAG + prompts → UI + eval logs → submission packaging.
-
-**Case where my approach beat the AI suggestion:** I did **not** ship the logger script to GitHub (Entry 5); I kept evaluation logs in `evaluation/test_results.md` and local tooling only.
