@@ -22,12 +22,7 @@ Evaluate how well the Option B pipeline identifies resume-job alignment, gaps, a
 - **Actionability:** Are suggestions specific enough to act on?
 - **Consistency:** Do repeated runs produce stable conclusions?
 
-## Quantitative Notes (per run)
-
-- Estimated fit score:
-- Strength coverage (% of true strengths captured):
-- Gap precision (% of listed gaps that are valid):
-- Response latency (seconds):
+Per-run numbers (model-reported fit score, keyword match %, latency) are recorded under each **Run R…** block as **Quant notes:**. Strength coverage and gap precision vs a human-labeled ground truth were not collected for this assignment, so those fields are omitted.
 
 ## Prompt Iteration Log
 
@@ -177,7 +172,7 @@ Evaluate how well the Option B pipeline identifies resume-job alignment, gaps, a
 - Quant notes: fit score=75, keyword match=60%, latency=N/A
 - Output summary: Three strengths had resume quotes; three gaps named missing tools; fit score 75.
 - What worked: Strength bullets were specific and easy to verify from the quotes.
-- What failed: ap bullets did not include matching job description quotes like the strengths did.
+- What failed: Gap bullets did not include matching job description quotes like the strengths did.
 - Next change: Add strict rule:  no tool names in gaps unless job description explicitly lists them.
 
 
@@ -186,7 +181,7 @@ Evaluate how well the Option B pipeline identifies resume-job alignment, gaps, a
 - Date: 2026-05-13 15:34
 - JD: `job10_derivatives_risk_and_operations_east_west_bank.txt`
 - Prompt version: v2
-- Analysis type: Skill Gap Rerport
+- Analysis type: Skill Gap Report
 - Quant notes: fit score=70, keyword match=75%, latency=N/A
 - Output summary: V2 skill gap gave 3 strengths and 3 gaps and a 70 fit score.
 - What worked: Both sides used chunk-backed wording and gaps correctly stressed derivatives, compliance, and model validation versus the resume.
