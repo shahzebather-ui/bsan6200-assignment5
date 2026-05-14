@@ -1,27 +1,75 @@
 # AI Usage Log (Tier 2)
 
-Minimum log for BSAN6200 Assignment 5 — Option B. Each entry: **date**, **tool**, **what I asked**, **what I used**, **what I changed**.
+BSAN6200 Assignment 5 — Option B. Each entry includes **Date**, **Tool**, what I asked, what I used, and what I changed.
 
 ---
 
-1. **2026-05-01 · Cursor / ChatGPT-class assistant** — Asked for help scaffolding the Option B repo layout (`streamlit_app.py`, `notebooks/`, `evaluation/`). Used folder structure and starter imports. **I kept** the layout; **I rewrote** prompts, chunking, and data paths to match my JD files and rubric.
+### Entry 1
 
-2. **2026-05-05 · Cursor** — Debugged `pip`/import errors and HF Inference client usage. Used suggested `InferenceClient` pattern and `python-dotenv`. **I adjusted** model id and `max_tokens` after truncation during Skill Gap runs.
+- **Date:** 2026-05-01  
+- **Tool:** Cursor (AI-assisted editor)  
+- **What I asked:** Help scaffolding the Option B repo (`streamlit_app.py`, `notebooks/`, `evaluation/`).  
+- **What I used:** Suggested folder layout and starter imports.  
+- **What I modified:** Kept the structure; rewrote prompts, chunking, and paths for my JD files and rubric.
 
-3. **2026-05-08 · Cursor** — Asked how to add Chroma retrieval and pass top‑k JD chunks into prompts. Used the retrieval outline. **I tuned** `TOP_K_CHUNKS` and query strings after manual review of chunk quality.
+### Entry 2
 
-4. **2026-05-10 · Cursor** — Requested tighter Skill Gap prompt (structured bullets, evidence). Used draft wording. **I edited** v2/v3 rules myself (3+3, severity labels, three actions) to match what I wanted graded.
+- **Date:** 2026-05-05  
+- **Tool:** Cursor  
+- **What I asked:** Debug `pip`/import errors and HF Inference client wiring.  
+- **What I used:** `InferenceClient` + `python-dotenv` pattern.  
+- **What I modified:** Model id and `max_tokens` after Skill Gap truncation.
 
-5. **2026-05-11 · Cursor** — Asked for Streamlit UI polish (theme, tabs, metrics). Used CSS/theme ideas. **I rejected** pushing a local logger script to GitHub; **I kept** it machine-only and added `scripts/` to `.gitignore` so submission stays clean.
+### Entry 3
 
-6. **2026-05-12 · Cursor** — Debugging Streamlit metric tiles not updating; assistant suggested rerender patterns. **I accepted** `st.rerun()` after runs and moving score parse order; **I verified** against a live Skill Gap output.
+- **Date:** 2026-05-08  
+- **Tool:** Cursor  
+- **What I asked:** How to add Chroma retrieval and pass top‑k JD chunks into prompts.  
+- **What I used:** Retrieval outline from assistant.  
+- **What I modified:** `TOP_K_CHUNKS` and retrieval query text after reviewing chunks.
 
-7. **2026-05-13 · Cursor** — README and memo drafts for rubric sections. Used outline text. **I personalized** findings, dates, and examples to match my logged runs in `evaluation/test_results.md`.
+### Entry 4
 
-8. **2026-05-13 · Cursor** — Notebook execution timing before deadline; used `jupyter nbconvert --execute` command suggestion. **I ran** execution with my local Anaconda interpreter so outputs save in the `.ipynb` for submission.
+- **Date:** 2026-05-10  
+- **Tool:** Cursor  
+- **What I asked:** Tighter Skill Gap prompt (structure + evidence).  
+- **What I used:** Draft wording.  
+- **What I modified:** Hand-edited v2/v3 rules (3+3, quotes, severity, three actions) for grading.
+
+### Entry 5
+
+- **Date:** 2026-05-11  
+- **Tool:** Cursor  
+- **What I asked:** Streamlit UI polish (theme, tabs, metrics).  
+- **What I used:** CSS / layout ideas.  
+- **What I modified:** **Rejected** putting a logger script in the repo; kept it local and **gitignored** `scripts/`.
+
+### Entry 6
+
+- **Date:** 2026-05-12  
+- **Tool:** Cursor  
+- **What I asked:** Fix metric tiles stuck on “Pending.”  
+- **What I used:** `st.rerun()` after runs + parse order suggestion.  
+- **What I modified:** Implemented rerun + score parsing; verified on a live Skill Gap run.
+
+### Entry 7
+
+- **Date:** 2026-05-13  
+- **Tool:** Cursor  
+- **What I asked:** README + memo alignment with rubric.  
+- **What I used:** Section outlines.  
+- **What I modified:** Personalized findings to match `evaluation/test_results.md`.
+
+### Entry 8
+
+- **Date:** 2026-05-13  
+- **Tool:** Cursor + local Jupyter  
+- **What I asked:** Save notebook outputs before deadline.  
+- **What I used:** `jupyter nbconvert --execute` (Anaconda `python`).  
+- **What I modified:** Ran notebook in-place so cells show outputs in the submitted `.ipynb`.
 
 ---
 
-**Progression:** early scaffolding → runtime/API fixes → RAG + prompt iterations → UI/eval polish → submission packaging.
+**Progression:** scaffolding → API/runtime → RAG + prompts → UI + eval logs → submission packaging.
 
-**Where I overrode AI:** severity / logging / repo hygiene choices (entry 5) and all prompt wording I hand-edited after drafts (entry 4).
+**Case where my approach beat the AI suggestion:** I did **not** ship the logger script to GitHub (Entry 5); I kept evaluation logs in `evaluation/test_results.md` and local tooling only.
